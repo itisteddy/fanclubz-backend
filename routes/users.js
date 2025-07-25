@@ -101,9 +101,14 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    console.log(`🔍 Login attempt for: ${email}`);
+    console.log(`📊 Total users in database: ${users.length}`);
+    users.forEach(user => console.log(`👤 User: ${user.email}`));
+
     // Find user
     const user = users.find(u => u.email === email.toLowerCase());
     if (!user) {
+      console.log(`❌ User not found: ${email}`);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -113,6 +118,7 @@ router.post('/login', async (req, res) => {
     // Check password
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
+      console.log(`❌ Invalid password for: ${email}`);
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password'
@@ -129,7 +135,7 @@ router.post('/login', async (req, res) => {
     // Return user data (without password)
     const { password: _, ...userResponse } = user;
     
-    console.log(`✅ User logged in: ${email}`);
+    console.log(`✅ User logged in successfully: ${email}`);
     
     res.json({
       success: true,
