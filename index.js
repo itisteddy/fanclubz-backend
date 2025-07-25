@@ -16,8 +16,33 @@ app.set('trust proxy', 1);
 
 // Middleware
 app.use(helmet());
+// CORS configuration - allow multiple origins
+const allowedOrigins = [
+  'https://fanclubz.app',
+  'https://fan-club-z.vercel.app',
+  'https://fan-club-z-git-main-ayusgcobas-projects.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'https://fanclubz.app',
+  origin: function(origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Also check if CORS_ORIGIN env var is set and matches
+    if (process.env.CORS_ORIGIN && process.env.CORS_ORIGIN.split(',').includes(origin)) {
+      return callback(null, true);
+    }
+    
+    console.log('CORS blocked origin:', origin);
+    const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    return callback(new Error(msg), false);
+  },
   credentials: true
 }));
 app.use(compression());
