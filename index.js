@@ -8,6 +8,9 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config();
 
+// Import routes
+const userRoutes = require('./routes/users');
+
 const app = express();
 const PORT = process.env.PORT || 10000;
 
@@ -75,6 +78,9 @@ app.get('/', (req, res) => {
   });
 });
 
+// API Routes  
+app.use('/api/users', userRoutes);
+
 // API routes
 app.get('/api', (req, res) => {
   res.json({
@@ -84,7 +90,9 @@ app.get('/api', (req, res) => {
     language: 'Pure JavaScript',
     endpoints: {
       health: '/api/health',
-      auth: '/api/auth/*',
+      userRegister: '/api/users/register',
+      userLogin: '/api/users/login',
+      userProfile: '/api/users/profile',
       info: '/api'
     }
   });
