@@ -10,6 +10,7 @@ dotenv.config();
 
 // Import routes
 const userRoutes = require('./routes/users');
+const betRoutes = require('./routes/bets');
 
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -80,6 +81,7 @@ app.get('/', (req, res) => {
 
 // API Routes  
 app.use('/api/users', userRoutes);
+app.use('/api/bets', betRoutes);
 
 // API routes
 app.get('/api', (req, res) => {
@@ -93,6 +95,9 @@ app.get('/api', (req, res) => {
       userRegister: '/api/users/register',
       userLogin: '/api/users/login',
       userProfile: '/api/users/profile',
+      bets: '/api/bets',
+      trendingBets: '/api/bets/trending',
+      betDetails: '/api/bets/:id',
       info: '/api'
     }
   });
