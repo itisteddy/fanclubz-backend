@@ -71,8 +71,11 @@ router.post('/register', async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Account created successfully!',
-      user: userResponse,
-      token,
+      data: {
+        user: userResponse,
+        accessToken: token,
+        refreshToken: token // Using same token for now
+      },
       onboarding: true
     });
 
@@ -131,8 +134,11 @@ router.post('/login', async (req, res) => {
     res.json({
       success: true,
       message: 'Login successful',
-      user: userResponse,
-      token
+      data: {
+        user: userResponse,
+        accessToken: token,
+        refreshToken: token // Using same token for now
+      }
     });
 
   } catch (error) {
