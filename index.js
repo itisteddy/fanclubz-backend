@@ -1,9 +1,9 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import compression from 'compression';
-import dotenv from 'dotenv';
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const compression = require('compression');
+const dotenv = require('dotenv');
 
 // Load environment variables
 dotenv.config();
@@ -26,21 +26,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check route
-app.get('/health', (req: express.Request, res: express.Response) => {
+app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    port: PORT
+    port: PORT,
+    message: 'Fan Club Z Backend is running!'
   });
 });
 
 // Root route
-app.get('/', (req: express.Request, res: express.Response) => {
+app.get('/', (req, res) => {
   res.json({
     message: 'Fan Club Z Backend API',
     version: '1.0.0',
     status: 'running',
+    language: 'JavaScript',
     endpoints: {
       health: '/health',
       api: '/api'
@@ -49,48 +51,72 @@ app.get('/', (req: express.Request, res: express.Response) => {
 });
 
 // API routes
-app.get('/api', (req: express.Request, res: express.Response) => {
+app.get('/api', (req, res) => {
   res.json({
     name: 'Fan Club Z API',
     version: '1.0.0',
     description: 'Social Betting Platform Backend',
+    language: 'Pure JavaScript',
     endpoints: {
       health: '/api/health',
+      auth: '/api/auth/*',
       info: '/api'
     }
   });
 });
 
-app.get('/api/health', (req: express.Request, res: express.Response) => {
+app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    message: 'API is working',
+    message: 'API is working perfectly!',
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
   });
 });
 
 // Simple auth endpoints
-app.post('/api/auth/register', (req: express.Request, res: express.Response) => {
+app.post('/api/auth/register', (req, res) => {
   res.json({
     message: 'Registration endpoint ready',
-    status: 'coming_soon'
+    status: 'coming_soon',
+    body: req.body
   });
 });
 
-app.post('/api/auth/login', (req: express.Request, res: express.Response) => {
+app.post('/api/auth/login', (req, res) => {
   res.json({
     message: 'Login endpoint ready',
+    status: 'coming_soon',
+    body: req.body
+  });
+});
+
+// Users endpoint
+app.get('/api/users/profile', (req, res) => {
+  res.json({
+    message: 'Profile endpoint ready',
     status: 'coming_soon'
   });
 });
 
 // 404 handler
-app.use('*', (req: express.Request, res: express.Response) => {
+app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Not Found',
     message: `Route ${req.originalUrl} not found`,
-    availableRoutes: ['/', '/health', '/api']
+    method: req.method,
+    availableRoutes: ['/', '/health', '/api', '/api/health']
+  });
+});
+
+// Error handler
+app.use((error, req, res, next) => {
+  console.error('Error:', error.message);
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: error.message,
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -99,7 +125,19 @@ app.listen(PORT, () => {
   console.log(`🚀 Fan Club Z Backend running on port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+  console.log(`🔗 API: http://localhost:${PORT}/api`);
+  console.log(`✅ Pure JavaScript - No TypeScript issues!`);
 });
 
-// Export for testing
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('SIGINT received, shutting down gracefully');
+  process.exit(0);
+});
+
 module.exports = app;
