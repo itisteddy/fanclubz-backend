@@ -1,53 +1,39 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
-import morgan from 'morgan'
-import compression from 'compression'
-import dotenv from 'dotenv'
-import { apiRoutes } from './routes/api.js'
-import { errorHandler } from './middleware/errorHandler.js'
-import { rateLimiter } from './middleware/rateLimiter.js'
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import compression from 'compression';
+import dotenv from 'dotenv';
 
 // Load environment variables
-dotenv.config()
+dotenv.config();
 
-const app = express()
-const PORT = process.env.PORT || 10000
+const app = express();
+const PORT = process.env.PORT || 10000;
 
 // Trust proxy for Render
-app.set('trust proxy', 1)
+app.set('trust proxy', 1);
 
 // Middleware
-app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
-}))
-
+app.use(helmet());
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'https://fanclubz.app',
   credentials: true
-}))
+}));
+app.use(compression());
+app.use(morgan('combined'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(compression())
-app.use(morgan('combined'))
-app.use(express.json({ limit: '10mb' }))
-app.use(express.urlencoded({ extended: true, limit: '10mb' }))
-
-// Rate limiting
-app.use(rateLimiter)
-
-// Routes
-app.use('/api', apiRoutes)
-
-// Health check (outside API routes for easier access)
+// Health check route
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     port: PORT
-  })
-})
+  });
+});
 
 // Root route
 app.get('/', (req, res) => {
@@ -59,11 +45,45 @@ app.get('/', (req, res) => {
       health: '/health',
       api: '/api'
     }
-  })
-})
+  });
+});
 
-// Error handling
-app.use(errorHandler)
+// API routes
+app.get('/api', (req, res) => {
+  res.json({
+    name: 'Fan Club Z API',
+    version: '1.0.0',
+    description: 'Social Betting Platform Backend',
+    endpoints: {
+      health: '/api/health',
+      info: '/api'
+    }
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'API is working',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// Simple auth endpoints
+app.post('/api/auth/register', (req, res) => {
+  res.json({
+    message: 'Registration endpoint ready',
+    status: 'coming_soon'
+  });
+});
+
+app.post('/api/auth/login', (req, res) => {
+  res.json({
+    message: 'Login endpoint ready',
+    status: 'coming_soon'
+  });
+});
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -71,26 +91,14 @@ app.use('*', (req, res) => {
     error: 'Not Found',
     message: `Route ${req.originalUrl} not found`,
     availableRoutes: ['/', '/health', '/api']
-  })
-})
+  });
+});
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Fan Club Z Backend running on port ${PORT}`)
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
-  console.log(`🔗 Health check: http://localhost:${PORT}/health`)
-  console.log(`🔗 API base: http://localhost:${PORT}/api`)
-})
+  console.log(`🚀 Fan Club Z Backend running on port ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔗 Health check: http://localhost:${PORT}/health`);
+});
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, shutting down gracefully')
-  process.exit(0)
-})
-
-process.on('SIGINT', () => {
-  console.log('SIGINT received, shutting down gracefully')
-  process.exit(0)
-})
-
-export default app
+export default app;
