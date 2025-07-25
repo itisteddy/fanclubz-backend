@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check route
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
@@ -36,7 +36,7 @@ app.get('/health', (req, res) => {
 });
 
 // Root route
-app.get('/', (req, res) => {
+app.get('/', (req: express.Request, res: express.Response) => {
   res.json({
     message: 'Fan Club Z Backend API',
     version: '1.0.0',
@@ -49,7 +49,7 @@ app.get('/', (req, res) => {
 });
 
 // API routes
-app.get('/api', (req, res) => {
+app.get('/api', (req: express.Request, res: express.Response) => {
   res.json({
     name: 'Fan Club Z API',
     version: '1.0.0',
@@ -61,7 +61,7 @@ app.get('/api', (req, res) => {
   });
 });
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (req: express.Request, res: express.Response) => {
   res.json({
     status: 'ok',
     message: 'API is working',
@@ -71,14 +71,14 @@ app.get('/api/health', (req, res) => {
 });
 
 // Simple auth endpoints
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', (req: express.Request, res: express.Response) => {
   res.json({
     message: 'Registration endpoint ready',
     status: 'coming_soon'
   });
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', (req: express.Request, res: express.Response) => {
   res.json({
     message: 'Login endpoint ready',
     status: 'coming_soon'
@@ -86,7 +86,7 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use('*', (req: express.Request, res: express.Response) => {
   res.status(404).json({
     error: 'Not Found',
     message: `Route ${req.originalUrl} not found`,
@@ -101,4 +101,5 @@ app.listen(PORT, () => {
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
 });
 
-export default app;
+// Export for testing
+module.exports = app;

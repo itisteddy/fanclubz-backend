@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Fan Club Z Backend API Server",
   "main": "dist/index.js",
-  "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
