@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: fanclubz-backend
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        value: sqlite3:./dev.db
+      - key: JWT_SECRET
+        value: e8513899a126aaae45696b6cfcb8965c08432fa09d915f1ee6d492f2f4e2331f
+      - key: JWT_REFRESH_SECRET
+        value: 5a97a97e155e0b37a298022f560d3c9f441ce38142232bfea4ce0a766a3b6286
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: ENABLE_CORS
+        value: true
+      - key: CORS_ORIGIN
+        value: https://fanclubz.app
